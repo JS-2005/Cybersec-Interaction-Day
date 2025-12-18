@@ -1,13 +1,15 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { AlertCircleIcon } from "lucide-react"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import Image from "next/image"
 import { useState } from "react"
+import { supabase } from "@/lib/supabase/client"
 
 export function ResetEmail({ className, ...props }: React.ComponentProps<"div">) {
     const [email, setEmail] = useState('')
@@ -16,7 +18,7 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
     const [isLoading, setIsLoading] = useState(false)
 
     const handleResetEmail = async (e: any) => {
-        e.preventDefault();
+        e.preventDefault()
         setIsLoading(true)
         setError(null)
 
@@ -24,7 +26,9 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: `${window.location.origin}/reset-password/new-password`,
             })
-            setSuccess(true)
+            if (!error) {
+                setSuccess(true)
+            }
         } catch (error: unknown) {
             setError(error instanceof Error ? error.message : 'An error occurred')
         } finally {
@@ -41,9 +45,8 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
                         <CardDescription>Password reset instructions sent</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            If you registered using your email and password, you will receive a password reset
-                            email.
+                        <p>
+                            You may close this window.
                         </p>
                     </CardContent>
                 </Card>
@@ -74,8 +77,13 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
                                 </Field>
+                                {error &&
+                                    <Alert variant="destructive">
+                                        <AlertCircleIcon />
+                                        <AlertTitle> {error} </AlertTitle>
+                                    </Alert>
+                                }
                                 <Field>
-                                    {error && <p className="text-sm text-red-500">{error}</p>}
                                     <Button type="submit" disabled={isLoading}>{isLoading ? 'Sending...' : 'Send Reset Email'}</Button>
                                 </Field>
                             </FieldGroup>

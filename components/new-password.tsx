@@ -1,14 +1,47 @@
+'use client'
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
+import { AlertCircleIcon } from "lucide-react"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 
-export function NewPassword({
-    className,
-    ...props
-}: React.ComponentProps<"div">) {
+import Image from "next/image"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
+
+export function NewPassword({ className, ...props }: React.ComponentProps<"div">) {
+    const [newPassword, setNewPassword] = useState('')
+    const [error, setError] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [password, setPassword] = useState('')
+    const router = useRouter()
+
+    const handleNewPassword = async (e: any) => {
+        e.preventDefault()
+        setIsLoading(true)
+        setError(null)
+
+        try {
+            const { error } = await supabase.auth.updateUser({
+                password: newPassword,
+            })
+            if (error) {
+                throw error
+            }
+            else {
+                router.replace('/login')
+            }
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : 'An error occurred')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -18,20 +51,26 @@ export function NewPassword({
                             <Image src="/cybersec_icon.png" alt="cybersec-icon" loading="eager" width={150} height={150} />
                         </div>
                     </div>
-                    <CardTitle>Enter your new password</CardTitle>
+                    <CardTitle>Reset Your Password</CardTitle>
                     <CardDescription>
                         Enter a new password for your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleNewPassword}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="newPassword">New Password</FieldLabel>
-                                <Input id="newPassword" type="password" required />
+                                <Input id="newPassword" type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                             </Field>
+                            {error &&
+                                <Alert variant="destructive">
+                                    <AlertCircleIcon />
+                                    <AlertTitle> {error} </AlertTitle>
+                                </Alert>
+                            }
                             <Field>
-                                <Button type="submit">Reset Password</Button>
+                                <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save New Password'}</Button>
                             </Field>
                         </FieldGroup>
                     </form>

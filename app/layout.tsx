@@ -6,16 +6,10 @@ export const metadata: Metadata = {
   description: "Web application for UTAR Cybersecurity Club Interaction Day",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
+      <body className={`antialiased`}>
         {children}
       </body>
     </html>

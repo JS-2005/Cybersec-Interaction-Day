@@ -1,15 +1,17 @@
 "use client";
 
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { AlertCircleIcon } from "lucide-react"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
 
@@ -25,12 +27,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      router.push('/home/admin');
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        throw error
+      }
+      else {
+        router.push('/home/admin')
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -71,6 +74,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
               </Field>
+              {error &&
+                <Alert variant="destructive">
+                  <AlertCircleIcon />
+                  <AlertTitle> {error} </AlertTitle>
+                </Alert>
+              }
               <Field>
                 <Button type="submit" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</Button>
                 <FieldDescription className="text-center">
