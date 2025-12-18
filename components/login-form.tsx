@@ -27,13 +27,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        throw error
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+      if (authError) {
+        throw authError
       }
-      else {
-        router.push('/home/admin')
-      }
+      router.push('/home/admin')
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {

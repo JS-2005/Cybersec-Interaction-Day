@@ -32,9 +32,7 @@ export function NewPassword({ className, ...props }: React.ComponentProps<"div">
             if (error) {
                 throw error
             }
-            else {
-                router.replace('/login')
-            }
+            router.replace('/login')
         } catch (error: unknown) {
             setError(error instanceof Error ? error.message : 'An error occurred')
         } finally {
