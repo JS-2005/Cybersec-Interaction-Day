@@ -11,7 +11,7 @@ import { Alert, AlertTitle } from "@/components/ui/alert"
 import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client"
 
 export function NewPassword({ className, ...props }: React.ComponentProps<"div">) {
     const [newPassword, setNewPassword] = useState('')
@@ -22,6 +22,7 @@ export function NewPassword({ className, ...props }: React.ComponentProps<"div">
 
     const handleNewPassword = async (e: any) => {
         e.preventDefault()
+        const supabase = createClient()
         setIsLoading(true)
         setError(null)
 

@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { AlertCircleIcon } from "lucide-react"
+import { AlertCircleIcon, CornerUpLeft } from "lucide-react"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import Image from "next/image"
 import { useState } from "react"
-import { supabase } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
 export function ResetEmail({ className, ...props }: React.ComponentProps<"div">) {
+    const router = useRouter()
     const [email, setEmail] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
@@ -19,6 +21,7 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
 
     const handleResetEmail = async (e: any) => {
         e.preventDefault()
+        const supabase = createClient()
         setIsLoading(true)
         setError(null)
 
@@ -53,6 +56,7 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
             ) : (
                 <Card>
                     <CardHeader>
+                        <Button variant="ghost" className="w-16" onClick={() => router.back()}><CornerUpLeft /> Back</Button>
                         <div className="flex items-center justify-center p-6">
                             <div className="rounded-xl overflow-hidden">
                                 <Image src="/cybersec_icon.png" alt="cybersec-icon" loading="eager" width={150} height={150} />

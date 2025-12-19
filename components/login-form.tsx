@@ -11,7 +11,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client"
+import { identity } from "@/lib/identity"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
 
@@ -23,6 +24,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
+    const supabase = createClient()
     setIsLoading(true);
     setError(null);
 
@@ -31,7 +33,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       if (authError) {
         throw authError
       }
-      router.push('/home/admin')
+      router.push('/home')
+
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
