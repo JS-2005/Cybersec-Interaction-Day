@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { AlertCircleIcon, CornerUpLeft } from "lucide-react"
-import { Alert, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import Image from "next/image"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -56,7 +56,7 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
             ) : (
                 <Card>
                     <CardHeader>
-                        <Button variant="ghost" className="w-16" onClick={() => router.back()}><CornerUpLeft /> Back</Button>
+                        <Button variant="ghost" className="w-16" onClick={() => router.back()}><CornerUpLeft />Back</Button>
                         <div className="flex items-center justify-center p-6">
                             <div className="rounded-xl overflow-hidden">
                                 <Image src="/cybersec_icon.png" alt="cybersec-icon" loading="eager" width={150} height={150} />
@@ -84,7 +84,7 @@ export function ResetEmail({ className, ...props }: React.ComponentProps<"div">)
                                 {error &&
                                     <Alert variant="destructive">
                                         <AlertCircleIcon />
-                                        <AlertTitle> {error} </AlertTitle>
+                                        <AlertDescription> {error} </AlertDescription>
                                     </Alert>
                                 }
                                 <Field>

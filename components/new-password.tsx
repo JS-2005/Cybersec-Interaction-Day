@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { AlertCircleIcon } from "lucide-react"
-import { Alert, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 import Image from "next/image"
 import { useState } from "react"
@@ -65,7 +65,7 @@ export function NewPassword({ className, ...props }: React.ComponentProps<"div">
                             {error &&
                                 <Alert variant="destructive">
                                     <AlertCircleIcon />
-                                    <AlertTitle> {error} </AlertTitle>
+                                    <AlertDescription> {error} </AlertDescription>
                                 </Alert>
                             }
                             <Field>

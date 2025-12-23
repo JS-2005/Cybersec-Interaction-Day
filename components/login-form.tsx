@@ -6,13 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { AlertCircleIcon } from "lucide-react"
-import { Alert, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { identity } from "@/lib/identity"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
 
@@ -78,7 +77,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               {error &&
                 <Alert variant="destructive">
                   <AlertCircleIcon />
-                  <AlertTitle> {error} </AlertTitle>
+                  <AlertDescription> {error} </AlertDescription>
                 </Alert>
               }
               <Field>
