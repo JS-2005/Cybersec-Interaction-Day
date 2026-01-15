@@ -6,6 +6,8 @@ import { type User } from '@supabase/supabase-js'
 import { LogoutButton } from '@/components/logout-button'
 import { FieldGroup, Field, FieldLabel, FieldLegend } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 export function AdminPage({ user }: { user: User | null }) {
 
@@ -18,7 +20,7 @@ export function AdminPage({ user }: { user: User | null }) {
     const getUserInfo = useCallback(async () => {
         try {
             setLoading(true)
-            const { data, error } = await supabase.from('user_info').select(`user_email, user_name, user_role`).limit(1).single()
+            const { data, error } = await supabase.from('user_info').select(`user_email, user_name, user_role`).eq('id', user?.id).single()
             if (error) {
                 throw error
             }
@@ -26,6 +28,15 @@ export function AdminPage({ user }: { user: User | null }) {
                 setUserName(data.user_name)
                 setUserEmail(data.user_email)
                 setRole(data.user_role)
+
+                const user_information = {
+                    username: data.user_name,
+                    userRole: "admin"
+                }
+
+                if(typeof(Storage) != "undefined"){
+                    localStorage.setItem("user", JSON.stringify(user_information));
+                }
             }
         } catch (error) {
             console.log(error)
@@ -34,7 +45,12 @@ export function AdminPage({ user }: { user: User | null }) {
         }
     }, [user, supabase])
 
-    useEffect(() => { getUserInfo() })
+    useEffect(() => { getUserInfo() }, [getUserInfo])
+
+    const router = useRouter()
+    const directing = () => {
+        router.push("/admin")
+    }
 
     return (
         <div className={"p-6"}>
@@ -53,6 +69,8 @@ export function AdminPage({ user }: { user: User | null }) {
                     <Input id="role" type="text" value={role || ''} readOnly />
                 </Field>
                 <Field>
+                    <Button onClick={directing} className='font-bold text-white bg-green-600'>Direct to Admin Page</Button>
+
                     <LogoutButton />
                 </Field>
             </FieldGroup>
