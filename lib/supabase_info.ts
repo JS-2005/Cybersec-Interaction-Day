@@ -11,7 +11,9 @@ export interface DB_User_Station {
     id: number,
     station_id: number,
     user_id: UUID,
-    point_assigned: number
+    point_assigned: number,
+    start_time: string,
+    end_time: string
 }
 
 export interface DB_User_Info {

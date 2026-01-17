@@ -1,19 +1,19 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { getCurrentUserName, getRanking } from "@/lib/data";
-import { UUID } from "crypto";
+import { display_list, getCurrentUserName, getRanking } from "@/lib/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 
+/*
 export interface display_list{
     id: UUID,
     name: string,
     email: string,
     rank: number;
     total_score: number
-}
+}*/
 
 export default function Ranking(){
 
@@ -76,7 +76,7 @@ export default function Ranking(){
                             <div className="w-auto">
                                 <p className={`text-4xl ${rankCSS} font-mono font-extrabold`}>{`#0${rl.rank}`}</p>
                             </div>
-                            <div className="w-175 flex justify-between">
+                            <div className="w-120 flex justify-between">
                                 <div>
                                     <p className="text-xl font-bold pb-1">{rl.name}</p>
                                     <p className="text-xs text-gray-400">{rl.email}</p>
@@ -85,6 +85,10 @@ export default function Ranking(){
                                     <p className="text-2xl font-bold text-primary neon-text pb-1">{rl.total_score}</p>
                                     <p className="text-xs text-secondary">TOTAL SCORE</p>
                                 </div>
+                            </div>
+                            <div className="bg-gray-800 rounded-xl border p-3">
+                                <p className="font-bold">{rl.amount_time}</p>
+                                <p className="text-xs pt-2 text-secondary">TOTAL TIME</p>
                             </div>
                         </Card>
                     )

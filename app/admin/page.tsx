@@ -1,6 +1,5 @@
 "use client"
 
-
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminAllocation, checkAdminControl, GameScore, GameStation, getCurrentUserName, getGameStation, getScore, getUser, updateUserScore, User } from "@/lib/data";
@@ -9,6 +8,22 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+type UpdateRule = {
+    id:number;
+    numAllow:number;
+}
+
+type UpdateConfig = UpdateRule[];
+
+const NumUpdateAllowed = [
+    {id: 1, numAllow: 5},
+    {id: 2, numAllow: 5},
+    {id: 3, numAllow: 5},
+    {id: 4, numAllow: 5},
+    {id: 5, numAllow: 5},
+];
+
+//type UpdatedScoreList = [];
 
 export default function AdminPage(){
 
@@ -21,10 +36,15 @@ export default function AdminPage(){
     const [current_name, getCurrentName] = useState<string>("");
     
     const [selectedID, getSelectedID] = useState<number>(1);
+    const [updateAllow, getUpdateAllow] = useState<UpdateConfig>(NumUpdateAllowed);
+    const [disableList, getDisableList] = useState<number[]>([]);
+    //const [displayAddScore, getDisplayAddScore] = useState<number>(0);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const router = useRouter();
+
+    //const disableList = [];
 
     useEffect(() => {
 
@@ -102,24 +122,54 @@ export default function AdminPage(){
 
         try{
             const existingScore = game_station.find((gs) => gs.game_id === stationID);
+            const specificUpdateAllow = updateAllow.find((ua) => ua.id === stationID);
 
-            if(existingScore){
-                if(updateMethod === "addition"){
+            if(existingScore && specificUpdateAllow){
+                if(updateMethod === "addition" && specificUpdateAllow?.numAllow > 0){
                     if(currentScore < existingScore.point){
-                        await updateUserScore(scoreID, updateMethod, currentScore);
+
+                        // add score id into list
+                        getDisableList((pre) => [...pre, scoreID]);
+
+                        await updateUserScore(scoreID, updateMethod, currentScore, specificUpdateAllow.numAllow);
                         const updatedList = await getScore();
                         getScoreInfo(updatedList);
                         const specific_updatedList = updatedList.filter((ul) => ul.station_id === stationID);
                         getParticipantList(specific_updatedList);
+
+                        const deductUpdate = updateAllow.map((ua) => {
+                            if(ua.id === stationID){
+                                return {id:ua.id, numAllow: ua.numAllow-1}
+                            }
+                            else{
+                                return {id:ua.id, numAllow: ua.numAllow}
+                            }
+                        })
+                        getUpdateAllow(deductUpdate);
                     }
                 }
-                else{
-                    if(currentScore > 0){
-                        await updateUserScore(scoreID, updateMethod, currentScore);
+                else if(updateMethod === "subtraction" && specificUpdateAllow?.numAllow < 5){
+                    if(currentScore >= 0){
+
+                        // delete score id into list
+                        const remainID = disableList.filter((dl) => dl !== scoreID);
+                        getDisableList(remainID);
+
+                        await updateUserScore(scoreID, updateMethod, currentScore, specificUpdateAllow.numAllow);
                         const updatedList = await getScore();
                         getScoreInfo(updatedList);
                         const specific_updatedList = updatedList.filter((ul) => ul.station_id === stationID);
                         getParticipantList(specific_updatedList);
+
+                        const AddUpdate = updateAllow.map((ua) => {
+                            if(ua.id === stationID){
+                                return {id:ua.id, numAllow: ua.numAllow+1}
+                            }
+                            else{
+                                return {id:ua.id, numAllow: ua.numAllow}
+                            }
+                        })
+                        getUpdateAllow(AddUpdate);
                     }
                 }
             }
@@ -187,6 +237,9 @@ export default function AdminPage(){
                     <TableBody>
                         {participant_list.map((pl) => {
 
+                            const AddScore = updateAllow.find((ua) => ua.id === pl.station_id);
+                            const displayAddScore = AddScore? (AddScore.numAllow * 2):0;
+
                             const Name_Email = all_user_info.find((aui) => pl.user_id === aui.user_id);
 
                             const checkStationAdmin = admin_list.filter((al) => al.station_id === pl.station_id);
@@ -198,12 +251,25 @@ export default function AdminPage(){
 
                             let canControl = false;
 
+                            // check for assigned admin
                             for (let i = 0; i<checkAdminName.length; i++){
 
                                 if(checkAdminName[i] === current_name){
                                     canControl = true;
                                 }
                             }
+
+                            // check can add ?
+                            let canAddControl = true;
+                            const isUpdated = disableList.find((dl) => dl === pl.score_id);
+                            if (isUpdated)
+                                canAddControl = false;
+
+                            // check can delete ?
+                            let canDelControl = false;
+                            const isDeleted = disableList.find((dl) => dl === pl.score_id);
+                            if (isDeleted)
+                                canDelControl = true;
 
                             return (
                                 <TableRow key={pl.score_id}>
@@ -216,10 +282,10 @@ export default function AdminPage(){
                                     </TableCell>
                                     <TableCell className="flex gap-5">
                                         <div>
-                                            <Button className="px-3 py-1 bg-black border border-red-500 text-red-500 hover:shadow-[0_0_15px_rgba(255,0,0,0.5)] hover:bg-black disabled:cursor-not-allowed" disabled={!canControl} onClick={() => handleUserScore(pl.score_id, pl.station_id, "subtraction", pl.score)}>-10</Button>
+                                            <Button className="px-3 py-1 bg-black border border-red-500 text-red-500 hover:shadow-[0_0_15px_rgba(255,0,0,0.5)] hover:bg-black disabled:cursor-not-allowed" disabled={!canControl? true:!canDelControl} onClick={() => handleUserScore(pl.score_id, pl.station_id, "subtraction", pl.score)}>Reset</Button>
                                         </div>
                                         <div>
-                                            <Button className="px-3 py-1 bg-black border border-green-500 text-green-500 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] hover:bg-black disabled:cursor-not-allowed" disabled={!canControl} onClick={() => handleUserScore(pl.score_id, pl.station_id, "addition", pl.score)}>+10</Button>
+                                            <Button className="px-3 py-1 bg-black border border-green-500 text-green-500 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] hover:bg-black disabled:cursor-not-allowed" disabled={!canControl? true:!canAddControl} onClick={() => handleUserScore(pl.score_id, pl.station_id, "addition", pl.score)}>{`+${displayAddScore}`}</Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
