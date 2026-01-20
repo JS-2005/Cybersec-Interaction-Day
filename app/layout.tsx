@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import CybersecNav from "@/components/navigation-bar";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Interaction Day"
@@ -10,9 +10,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="dark">
       <body className={`antialiased`}>
-        <CybersecNav>
+        <Suspense>
           {children}
-        </CybersecNav>
+        </Suspense>
       </body>
     </html>
   );

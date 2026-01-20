@@ -4,10 +4,13 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuL
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ReactNode, useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
-export default function CybersecNav({children}: {children:ReactNode}){
+export default function CybersecNav({ children }: { children: ReactNode }) {
 
-    const [login_opt, setLogin] = useState<boolean>(true);
+    // Initialize Supabase
+    const supabase = createClient();
+
     const [participant_opt, setParticipant] = useState<boolean>(true);
     const [admin_opt, setAdmin] = useState<boolean>(true);
     const [ranking_opt, setRanking] = useState<boolean>(true);
@@ -16,60 +19,51 @@ export default function CybersecNav({children}: {children:ReactNode}){
 
     const buttonList = [
         {
-            name: "Login",
-            directTo: "/login",
-            visible: login_opt
-        },
-        {
             name: "Participant",
-            directTo : "/participant",
+            directTo: "/home/participant",
             visible: participant_opt
         },
         {
             name: "Admin",
-            directTo: "/admin",
+            directTo: "/home/admin",
             visible: admin_opt
         },
         {
             name: "Ranking",
-            directTo: "/ranking",
+            directTo: "/home/ranking",
             visible: ranking_opt
+        },
+        {
+            name: "Profile",
+            directTo: "/home/profile",
+            visible: true
         }
     ]
 
     useEffect(() => {
-        const checkAvailability = () =>{
-            if (typeof(Storage) != "undefined"){
-                
-                const information = localStorage.getItem("user");
 
-                if (information){
-                    const js_info = JSON.parse(information);
+        const userRole = async () => {
 
-                    if (js_info.userRole === "participant"){
-                        setLogin(false);
-                        setParticipant(true);
-                        setAdmin(false);
-                        setRanking(true);
-                    }
-                    else{
-                        setLogin(false);
-                        setParticipant(true);
-                        setAdmin(true);
-                        setRanking(true);
-                    }
-                }
-                else{
-                    setLogin(true);
-                    setParticipant(false);
-                    setAdmin(false);
-                    setRanking(false);
-                }
+            // Get Supabase Claims
+            const { data: userClaims } = await supabase.auth.getClaims();
+
+            // Get user_email, user_name, user_role
+            const { data } = await supabase.from('user_info').select(`user_email, user_name, user_role`).eq('id', userClaims?.claims.sub).single()
+
+            console.log(data)
+            if (data?.user_role == "participant") {
+                setParticipant(true);
+                setAdmin(false);
+                setRanking(true);
+            }
+            else {
+                setParticipant(true);
+                setAdmin(true);
+                setRanking(true);
             }
         }
-
-        checkAvailability();
-    });
+        userRole();
+    }, []);
 
     return (
         <div>
@@ -77,21 +71,21 @@ export default function CybersecNav({children}: {children:ReactNode}){
                 <NavigationMenu className="p-5">
                     <div className="flex justify-between items-center flex-col sm:flex-row">
                         <NavigationMenuList>
-                            <NavigationMenuItem className="text-2xl font-extrabold text-primary neon-text">CYBERSEC
+                            <NavigationMenuItem className="text-2xl font-extrabold text-primary">CYBERSEC
                                 <span className="text-secondary">GAME</span></NavigationMenuItem>
                         </NavigationMenuList>
                         <NavigationMenuList>
                             <NavigationMenuItem>
-                                { buttonList.map((button) => {
+                                {buttonList.map((button) => {
                                     const isActive = pathname === button.directTo;
                                     const isHome = pathname === "/home";
 
                                     return (
-                                    <NavigationMenuLink key={button.name} className={`p-3 ${isActive ? "text-primary border-b-2 border-primary rounded-xl":"text-gray-300 hover:text-white"
-                                    } ${button.visible ? "":"hidden"} ${isHome? "hidden":""}`} asChild>
-                                        <Link href={button.directTo}>{button.name}</Link>
-                                    </NavigationMenuLink>
-                                )
+                                        <NavigationMenuLink key={button.name} className={`p-3 ${isActive ? "text-primary border-b-2 border-primary rounded-xl" : "text-gray-300 hover:text-white"
+                                            } ${button.visible ? "" : "hidden"} ${isHome ? "hidden" : ""}`} asChild>
+                                            <Link href={button.directTo}>{button.name}</Link>
+                                        </NavigationMenuLink>
+                                    )
                                 })}
                             </NavigationMenuItem>
                         </NavigationMenuList>

@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation"
 export function LogoutButton() {
     const router = useRouter()
     const handleLogout = async () => {
-        if (typeof(Storage) != "undefined"){
+        if (typeof (Storage) != "undefined") {
             localStorage.removeItem("user");
         }
 
         const supabase = createClient()
         await supabase.auth.signOut()
-        router.replace('/login')
+        router.replace('/')
     }
 
     return (
