@@ -9,23 +9,23 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { use } from "react";
 
-export default function DirectGame({params}: {params: Promise<{id:string}>}){
+export default function DirectGame({ params }: { params: Promise<{ id: string }> }) {
 
     const unwrapGameID = use(params);
     const gameID = parseInt(unwrapGameID.id);
 
     const renderPage = () => {
-        switch(gameID){
+        switch (gameID) {
             case 1:
-                return <FirstGame/>
+                return <FirstGame />
             case 2:
-                return <SecondGame/>
+                return <SecondGame />
             case 3:
-                return <ThirdGame/>
+                return <ThirdGame />
             case 4:
-                return <FourthGame/>
+                return <FourthGame />
             case 5:
-                return <FifthGame/>
+                return <FifthGame />
             default:
                 return (
                     <div>
@@ -35,7 +35,7 @@ export default function DirectGame({params}: {params: Promise<{id:string}>}){
         }
     }
 
-    return(
+    return (
         <div>
             <div className="pt-5">
                 <Link href="/participant">

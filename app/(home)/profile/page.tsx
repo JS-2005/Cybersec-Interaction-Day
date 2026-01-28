@@ -27,21 +27,18 @@ export default function Profile() {
             // Get Supabase Claims
             const { data: userClaims } = await supabase.auth.getClaims();
 
-            console.log(userClaims)
+            const { data } = await supabase
+                .rpc('get_user_info', {
+                    userid: userClaims?.claims.sub
+                })
 
-            const { data, error } = await supabase
-                .from('user_info')
-                .select('user_name, user_email, user_role')
-                .eq('id', userClaims?.claims.sub)
-                .single()
-
-            setUserName(data?.user_name)
-            setUserEmail(data?.user_email)
-            setRole(data?.user_role)
+            setUserName(data[0].user_name)
+            setUserEmail(data[0].user_email)
+            setRole(data[0].user_role)
 
             // Check User Claims Whether Expired
             if (!userClaims) {
-                router.push('/')
+                router.replace('/')
             }
 
         }

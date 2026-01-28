@@ -32,7 +32,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       if (authError) {
         throw authError
       }
-      router.push('/home')
+      router.push('/')
 
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');

@@ -1,6 +1,8 @@
+"use client"
 import { UUID } from "crypto";
 import { createClient } from "./supabase/client";
 import { DB_Admin_Control, DB_Station, DB_User_Info, DB_User_Station } from "./supabase_info";
+import { useEffect } from "react";
 
 const supabase = createClient();
 

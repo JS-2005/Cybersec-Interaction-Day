@@ -1,22 +1,21 @@
 "use client"
 
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { GameScore, GameStation, getCurrentUserName, getGameStation, getRanking, getScore, getUser, insertGame, User } from "@/lib/data";
+import { GameScore, GameStation, getGameStation, getRanking, getScore, getUser, insertGame, User } from "@/lib/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function UserPage() {
+export default function ParticipantPage() {
 
     const supabase = createClient();
 
     const [all_station, setStation] = useState<GameStation[]>([]);
-    const [all_user_score, getAllUserScore] = useState<GameScore[]>([]);
-    const [all_user, getAllUser] = useState<User[]>([]);
-    const [display_rank, getDisplayRank] = useState<number | null>(null);
+    const [all_user_score, setAllUserScore] = useState<GameScore[]>([]);
+    const [all_user, setAllUser] = useState<User[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [current_name, getCurrentName] = useState<string>("");
+    const [current_name, setCurrentName] = useState<string>("");
 
     const [isloading, setIsLoading] = useState<boolean>(true);
 
@@ -28,7 +27,7 @@ export default function UserPage() {
         const checkUserClaims = async () => {
             const { data: userClaims } = await supabase.auth.getClaims();
             if (!userClaims) {
-                router.push('/')
+                router.replace('/')
             }
         }
         checkUserClaims();
@@ -49,8 +48,8 @@ export default function UserPage() {
                 const current_rank = await getRanking();
 
                 setStation(fetch_game);
-                getAllUserScore(score);
-                getAllUser(user);
+                setAllUserScore(score);
+                setAllUser(user);
 
             }
             catch (error) {

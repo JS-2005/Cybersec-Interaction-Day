@@ -20,22 +20,22 @@ export default function CybersecNav({ children }: { children: ReactNode }) {
     const buttonList = [
         {
             name: "Participant",
-            directTo: "/home/participant",
+            directTo: "/participant",
             visible: participant_opt
         },
         {
             name: "Admin",
-            directTo: "/home/admin",
+            directTo: "/admin",
             visible: admin_opt
         },
         {
             name: "Ranking",
-            directTo: "/home/ranking",
+            directTo: "/ranking",
             visible: ranking_opt
         },
         {
             name: "Profile",
-            directTo: "/home/profile",
+            directTo: "/profile",
             visible: true
         }
     ]
@@ -50,7 +50,6 @@ export default function CybersecNav({ children }: { children: ReactNode }) {
             // Get user_email, user_name, user_role
             const { data } = await supabase.from('user_info').select(`user_email, user_name, user_role`).eq('id', userClaims?.claims.sub).single()
 
-            console.log(data)
             if (data?.user_role == "participant") {
                 setParticipant(true);
                 setAdmin(false);

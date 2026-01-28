@@ -17,7 +17,7 @@ export default function Home() {
 
       if (userClaims) {
         // Redirect to home
-        redirect("/home")
+        redirect("/profile")
 
       } else {
         // Redirect to login
