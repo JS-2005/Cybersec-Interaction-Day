@@ -1,13 +1,16 @@
 "use client"
 
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { GameScore, GameStation, getGameStation, getRanking, getScore, getUser, insertGame, User } from "@/lib/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ParticipantPage() {
+    type station = {
+        station_name: string,
+        station_description: string,
+    }
 
     const supabase = createClient();
 
